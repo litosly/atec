@@ -1,43 +1,20 @@
 import pandas as pd
-import numpy as np
-import pickle as pkl
+
+df_path = 'data/atec_nlp_sim_train.csv'
 
 
-import matplotlib
-import numpy as np
-import matplotlib.pyplot as plt
-
-import jieba
+def process_data(line):
+    return line.split('\t')
 
 
-
-df = pd.read_csv('atec_nlp_sim_train.csv',error_bad_lines=False,header = None)
-
-
-def get_data_for_one_line(line):
-    x = []
-    temp = line.split('\t')[1]
-    if temp[0]=='\ufeff':
-        temp = temp[1:]
-#     if(temp)
-        
-    x.append(temp)
-    x.append(line.split('\t')[2])
-    y = line.split('\t')[3]
-    return x,y
-
-def get_data_for_mutiple_line(original_data):
+def get_data(df_path):
+    df_original = pd.read_csv(df_path, error_bad_lines=False, header=None)
     data = []
-    for i in range(len(original_data)):
-        x,y = get_data_for_one_line(original_data[i])
-        data.append([x,y])
-    return data
+    for i, row in df_original.iterrows():
+        data.append(process_data(row[0]))
+    df_output = pd.DataFrame(data, columns=['id', 'text1', 'text2', 'label'])
+    return df_output
 
-
-
-######################################################################
 
 if __name__ == '__main__':
-	pass
-	# data_1 = get_data_for_mutiple_line(df[0]) 
-
+    data_1 = get_data(df_path)
