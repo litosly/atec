@@ -1,1 +1,31 @@
 SyntaxNet Google 
+
+
+- Base architecture 
+
+seq2seq autoencoder
+reference (https://pytorch.org/tutorials/intermediate/seq2seq_translation_tutorial.html)
+
+
+- Embeddings 
+
+different embeddings offered in Tensorflow hub 
+https://github.com/tensorflow/hub/blob/master/docs/modules/text.md
+
+-> chinese NNLM embedding trained on Google news, dim 50 & 	128 
+
+-> trained word2vec on chinese corpus 
+	-> Polyglot (https://sites.google.com/site/rmyeid/projects/polyglot)
+	-> word vectors (https://github.com/Kyubyong/wordvectors)
+	-> SCWE (https://github.com/JianXu123/SCWE)
+
+-> trained universal sentence encoder on chinese corpus 
+	-> Transformer encoder (fully attentative) 
+		-> attentoin is all you need Pytorch implementation (https://github.com/jadore801120/attention-is-all-you-need-pytorch)
+	->  Deep Averaging Network (DAN) 
+
+
+Sides Notes:
+
+alternative to jieba:
+https://github.com/NLPchina/ansj_seg
