@@ -7,3 +7,5 @@
 *.xml
 *.xml
 *.pyc
+word2vec/glove.840B.300d.txt
+word2vec/infersent.allnli.pickle
