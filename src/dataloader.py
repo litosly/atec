@@ -15,6 +15,7 @@ class AtecDataset(Dataset):
 	def __init__(self, config, mode="train"):
 		super(AtecDataset, self).__init__()
 		self.config = config 
+		self.mode = mode 
 		self.load_embedded_data()
 
 	def __len__(self):
@@ -63,14 +64,6 @@ def get_dataloader(config, mode="train", full=False):
 								collate_fn = my_collate,
 								num_workers = config.num_worker)
 	return atec_dataloader
-
-
-def get_dataloaders(config, modes=["train", "valid", "test"]):
-	if "train" in modes:
-		train_dataloader = get_dataloader(config, mode="train")
-	valid_dataloader = get_dataloader(config, mode="valid", full=True) if "valid" in modes else None
-	test_dataloader = get_dataloader(config, mode="test", full=True) if "test" in modes else None 
-	return train_dataloader, valid_dataloader, test_dataloader
 
 
 

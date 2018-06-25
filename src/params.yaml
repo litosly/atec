@@ -1,0 +1,15 @@
+local: &DEFAULT
+  # model stuff 
+  input_size: 5
+  hidden_size: 10
+  output_size: 5
+  # train stuff 
+  batch_size: 5   
+  lr: 0.01  # leanring rate 
+  num_epoch: 2
+  log_step: 10
+  num_worker: 4
+  save_step: 10
+deploy:
+  <<: *DEFAULT
+  work_dir: /opt/workspace/
