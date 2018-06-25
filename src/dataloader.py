@@ -1,89 +1,76 @@
 import os 
 import re 
 import csv
+import argparse 
 import numpy as np 
 
 import torch 
 from torch.utils.data import Dataset, DataLoader
+from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 
-
-class Lang(object):
-	""" creates word-index mappings 
-	"""
-	def __init__(self, name):
-		self.name = name 
-		self.word2index = {}
-		self.word2count = {}
-		self.index2word = {0: "SOS", 1: "EOS"}
-		self.n_words = 2   
-
-	def addSentence(self, sentence):
-		# need to split according to Chinese sentences or specific input format
-		for word in sentence.split():
-			self.addWord(word)
-
-	def addWord(self, word):
-		if word not in self.word2index:
-			self.word2index[word] = self.n_words
-			self.word2count[word] = 1 
-			self.index2word[self.n_words] = word 
-			self.n_words += 1 
-		else:
-			self.word2count[word] += 1 
-
-
-def unicodeToAscii(s):
-	return ''.join(c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn')
-
-def normalizeString(s):
-	s = unicodeToAscii(s.lower().strip())
-	s = re.sub(r"([.!?])", r" \1", s)
-	s = re.sub(r"[^a-zA-Z.!?]+", r" ", s)
-	return s 
-
-def readLangs(path):
-	print("Reading data...")
-
-	with open(data_path, 'rb') as f:
-	    reader = csv.reader(f)
-	    data_list = list(reader)
-	# each item (sent1, sent2, label)
-	item_list = [[w for w in item[0].split('\t')] for item in data_list]
-	# TODO, apply filters here to remove unwanted lexiacal info 
-	# word-index mappings 
-	lang = Lang(path)
-	return item_list, lang 
-
-def prepareData(path):
-	items, lang = readLangs(path)
-	for item in items:
-		lang.addSentence(item[0])
-		lang.addSentence(item[1])
-	print("Counted words: ", lang.n_words)
-	return items, lang 
+####################################################################################################
 
 
 class AtecDataset(Dataset):
 	def __init__(self, config, mode="train"):
+		super(AtecDataset, self).__init__()
 		self.config = config 
-		self.build_dic()
+		self.load_embedded_data()
 
 	def __len__(self):
-		return len(self.items)
+		return len(self.labels)
 
 	def __getitem__(self, index):
-		return self.items[index]
+		return self.data[index], self.labels[index]
 
-	def build_dic(self):
-		items, lang = prepareData(config.data_path)
-		self.items = items 
-		self.lang = lang 
+	def load_embedded_data(self):
+		# for test 
+		self.data = [(np.random.rand(4, 5), np.random.rand(5, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(8, 5), np.random.rand(9, 5))]
+		self.labels =  [0, 1, 1]
+		
+		# 
+		# self.data = None  # list of tuples 
+		# self.labels = None # list of ints 
 
 
-def get_dataloader(config, mode="train"):
+def my_collate(batch):
+	sentences = [torch.FloatTensor(sent) for item in batch for sent in item[0]]   # item[0] is sentence tuple
+	labels = torch.LongTensor([item[1] for item in batch]) 	# item[1] is label
+
+	lengths = torch.LongTensor([len(sent) for sent in sentences])
+	sorted_lengths, indices = torch.topk(lengths, k=len(lengths))
+	sentences = [sentences[idx] for idx in indices]
+
+	data = pad_sequence(sentences, batch_first=True)
+	data = pack_padded_sequence(data, sorted_lengths, batch_first=True)
+	return data, labels, indices, lengths
+
+
+def get_dataloader(config, mode="train", full=False):
 	atec_dataset = AtecDataset(config, mode)
-	atrc_dataloader = DataLoader(dataset = atec_dataset, 
-							batch_size = config.batch_size,
-							shuffle = True, 
-							num_worker = config.num_worker)
+	if not full:
+		atec_dataloader = DataLoader(dataset = atec_dataset, 
+								batch_size = config.batch_size,
+								shuffle = True, 
+								collate_fn = my_collate,
+								num_workers = config.num_worker)
+	else:
+		atec_dataloader = DataLoader(dataset = atec_dataset, 
+								batch_size = len(atec_dataset),
+								shuffle = True, 
+								collate_fn = my_collate,
+								num_workers = config.num_worker)
 	return atec_dataloader
+
+
+def get_dataloaders(config, modes=["train", "valid", "test"]):
+	if "train" in modes:
+		train_dataloader = get_dataloader(config, mode="train")
+	valid_dataloader = get_dataloader(config, mode="valid", full=True) if "valid" in modes else None
+	test_dataloader = get_dataloader(config, mode="test", full=True) if "test" in modes else None 
+	return train_dataloader, valid_dataloader, test_dataloader
+
+
+
