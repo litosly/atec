@@ -36,26 +36,7 @@ class AtecDataset(Dataset):
 		self.data = [(np.random.rand(4, 5), np.random.rand(5, 5)),
 					 (np.random.rand(6, 5), np.random.rand(7, 5)),
 					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(8, 5), np.random.rand(9, 5))]
+					]
 		self.labels =  [0, 1, 1]
 		
 		# 

@@ -68,15 +68,16 @@ class Solver(object):
             if (epoch+1) % self.config.save_step == 0:
                 model_path = os.path.join(self.config.model_dir, 'model-%d.pkl' %(epoch+1))
                 self.save_model(self.model, model_path)
-            
+                
             # log model performance over epochs
             valid_acc = self.evaluate(self.valid_dataloader)
             test_acc = self.evaluate((self.test_dataloader))
             self.writer.add_scalars('data/accuracy', {'valid': valid_acc.data[0],
                 'test': test_acc.data[0]}, epoch)
+
             print( 'Epoch [%d/%d], valid acc: %.4f, test acc: %.4f' 
                       % (epoch+1, self.config.num_epoch, valid_acc.data[0], test_acc.data[0]))
-
+            
         self.close_log(self.writer)
 
     def train_step(self, epoch):
@@ -97,7 +98,8 @@ class Solver(object):
                 self.writer.add_scalar('data/train_acc', acc.data[0], epoch*total_steps+i)
                 print( 'Epoch [%d/%d], Step[%d/%d], loss: %.4f, acc: %.4f' 
                       % (epoch+1, self.config.num_epoch, i+1, total_steps, loss.data[0], acc.data[0]))
-
+            # print(acc.data[0])
+            # print(loss.data[0])
     def inference(self, data, indices):
         logits = self.model(data, indices)
         preds = torch.argmax(logits, dim=1).long()
@@ -109,16 +111,18 @@ class Solver(object):
             preds = self.inference(data, indices)
             acc = self.metric(preds, labels)
             accs.append(acc.data[0])
-        return sum(accs) / len(accs)
+        return sum(accs) / float(len(accs))
 
     def metric(self, preds, labels):
         # accuracy 
         res = torch.eq(preds, labels)
-        acc = torch.sum(res) /  len(res)
-        tp = 0
-        fp = 0
-        tn = 0
-        fn = 0
+        acc = torch.sum(res).double() /  torch.tensor(res.shape[0]).double()
+        # print('-------------Good Boy--------------')
+        # print(res)
+        tp = 1
+        fp = 1
+        tn = 1
+        fn = 1
         precision = tp/(tp+fp)
         recall = tp/(tp+fn)
         acc_f1 = (tp+tn)/(tp+tn+fp+fn)
