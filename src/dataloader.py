@@ -1,3 +1,10 @@
+#####################################
+# Load data/embedding 
+# Author: Justin
+# Date modified: 2018-06-24
+#####################################
+
+
 import os 
 import re 
 import csv
@@ -27,6 +34,26 @@ class AtecDataset(Dataset):
 	def load_embedded_data(self):
 		# for test 
 		self.data = [(np.random.rand(4, 5), np.random.rand(5, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
+					 (np.random.rand(6, 5), np.random.rand(7, 5)),
 					 (np.random.rand(6, 5), np.random.rand(7, 5)),
 					 (np.random.rand(8, 5), np.random.rand(9, 5))]
 		self.labels =  [0, 1, 1]

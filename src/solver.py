@@ -1,7 +1,8 @@
 #####################################
 # Train/Evaluate
 # Author: Justin
-# Date modified: 2018-06-24
+# Modifier: Litos
+# Date modified: 2018-06-26
 #####################################
 
 
@@ -45,12 +46,12 @@ class Solver(object):
 
         # training stuff 
         self.criterion = nn.CrossEntropyLoss()
-        self.trainable_params = list(model.encoder.parameters())+list(model.comparator.parameters())
-        self.optimizer = Adam(trainable_params, lr=config.lr)
-        self.scheduler = MultiStepLR(optimizer, milestones=[10, 20, 30], gamma=0.1)
+        self.trainable_params = list(self.model.encoder.parameters())+list(self.model.comparator.parameters())
+        self.optimizer = Adam(self.trainable_params, lr=self.config.lr)
+        self.scheduler = MultiStepLR(self.optimizer, milestones=[10, 20, 30], gamma=0.1)
 
         # bookkeeping stuff 
-        self.writer =  SummaryWriter(seltf.config.log_dir)
+        self.writer =  SummaryWriter(self.config.log_dir)
 
     def load_model(self, model_path):
         self.model.load_state_dict(torch.load(model_path))
@@ -64,7 +65,7 @@ class Solver(object):
             self.train_step(epoch)
 
             # save the model per epoch, only save parameters 
-            if (epoch+1) % config.save_step == 0:
+            if (epoch+1) % self.config.save_step == 0:
                 model_path = os.path.join(self.config.model_dir, 'model-%d.pkl' %(epoch+1))
                 self.save_model(self.model, model_path)
             
@@ -74,7 +75,7 @@ class Solver(object):
             self.writer.add_scalars('data/accuracy', {'valid': valid_acc.data[0],
                 'test': test_acc.data[0]}, epoch)
             print( 'Epoch [%d/%d], valid acc: %.4f, test acc: %.4f' 
-                      % (epoch+1, self.config.num_epochs, valid_acc.data[0], test_acc.data[0]))
+                      % (epoch+1, self.config.num_epoch, valid_acc.data[0], test_acc.data[0]))
 
         self.close_log(self.writer)
 
@@ -91,11 +92,11 @@ class Solver(object):
             self.optimizer.step()
 
             # log loss, could visualize in tensorboard if needed 
-            if (i+1) % config.log_step == 0:
+            if (i+1) % self.config.log_step == 0:
                 self.writer.add_scalar('data/loss', loss.data[0], epoch*total_steps+i)
                 self.writer.add_scalar('data/train_acc', acc.data[0], epoch*total_steps+i)
                 print( 'Epoch [%d/%d], Step[%d/%d], loss: %.4f, acc: %.4f' 
-                      % (epoch+1, self.config.num_epochs, i+1, total_steps, loss.data[0], acc.data[0]))
+                      % (epoch+1, self.config.num_epoch, i+1, total_steps, loss.data[0], acc.data[0]))
 
     def inference(self, data, indices):
         logits = self.model(data, indices)
@@ -108,12 +109,20 @@ class Solver(object):
             preds = self.inference(data, indices)
             acc = self.metric(preds, labels)
             accs.append(acc.data[0])
-        return accs / len(accs)
+        return sum(accs) / len(accs)
 
     def metric(self, preds, labels):
         # accuracy 
         res = torch.eq(preds, labels)
         acc = torch.sum(res) /  len(res)
+        tp = 0
+        fp = 0
+        tn = 0
+        fn = 0
+        precision = tp/(tp+fp)
+        recall = tp/(tp+fn)
+        acc_f1 = (tp+tn)/(tp+tn+fp+fn)
+        f1 = 2*precision*recall/(precision+recall)
         return acc 
 
     def close_log(self, writer, log_path="./all_scalars.json"):
