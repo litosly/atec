@@ -24,8 +24,8 @@ close_block () {
 
 BLOCK_TITLE="Model Training"
 start_block "${BLOCK_TITLE}"
-pip_version install -r ${REQUIREMENTS_PATH};
-tensorboard_cmd ${LOG_PATH} &;
-python_version "${SRC_PATH}/main.py" \
+${pip_version} install -r ${REQUIREMENTS_PATH};
+# tensorboard_cmd ${LOG_PATH} &;
+${python_version} "${SRC_PATH}/main.py" \
 --data_dir ${DATA_PATH} --model_dir ${MODEL_PATH} --log_dir ${LOG_PATH} --params_path ${PARAMS_PATH}
 close_block "${BLOCK_TITLE}"

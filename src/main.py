@@ -1,10 +1,17 @@
+#####################################
+# Main File
+# Author: Justin
+# Date modified: 2018-06-24
+#####################################
+
+
 import os 
 import sys 
 import argparse 
 import numpy as np 
 import yaml 
 
-from dataloader import get_test_dataloader
+# from dataloader import get_test_dataloader
 from solver import Solver 
 
 
@@ -60,9 +67,9 @@ if __name__ == '__main__':
     # parser.add_argument('--log_step', type=int, default=10, help='interval between training status logs')
     # parser.add_argument('--num_worker', type=int, default=4, help='number of workers for parallelizationp')
     # parser.add_argument('--save_step', type=int, default=10, help='interval between training model saves')
-
+    print('-------------Good Boy--------------')
     args = parser.parse_args()
     print(args)
-
+    print('-------------Good Girl--------------')
     main(args)
-
+    # print(yaml.load(config.params_path))

@@ -1,3 +1,10 @@
+#####################################
+# Train/Evaluate
+# Author: Justin
+# Date modified: 2018-06-24
+#####################################
+
+
 import os 
 import argparse 
 import numpy as np 
@@ -9,7 +16,7 @@ from torch.optim.lr_scheduler import MultiStepLR
 from tensorboardX import SummaryWriter
 
 from model import Encoder, Comparator, AtecModel
-from dataloader import get_dataloader, get_test_dataloader
+from dataloader import get_dataloader#, get_test_dataloader
 from torch.nn.utils.rnn import pad_packed_sequence
 
 
@@ -91,7 +98,7 @@ class Solver(object):
                       % (epoch+1, self.config.num_epochs, i+1, total_steps, loss.data[0], acc.data[0]))
 
     def inference(self, data, indices):
-        logits = self.model.(data, indices)
+        logits = self.model(data, indices)
         preds = torch.argmax(logits, dim=1).long()
         return preds 
 
