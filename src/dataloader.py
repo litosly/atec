@@ -48,20 +48,52 @@ class AtecDataset(Dataset):
 				data.extend(temp)
 		return data
 
-	def load_embedded_data(self):
-		self.num_of_data_files = 2
-		self.data_path = "../data/"
-		self.num_of_sentences = self.num_of_data_files*1000 #from how ivan's data is structured
-		self.sentences1 = self.read_sentence(num_files = self.num_of_data_files,sentence_i=1)
-		self.sentences2 = self.read_sentence(num_files = self.num_of_data_files,sentence_i=2)
-		# shape: (1000*num_files) X num_of_vectors (each vector is of size 4096)
+	def sparse2array(self, sparse_sentence):
+		return [i.toarray() for i in sparse_sentence]
 
+	def read_sentence_sparse(self, num_files = 1,sentence_i=1, data_path = "../data/"):
+		data = []
+		if sentence_i == 1:
+			path = data_path + 'sparse1/'
+			for i in range(num_files):
+				filename = 'sparsed' + str(i+1) +'.npy'
+				temp = np.load(path+filename)
+				data.extend(temp)
+		else:
+			path = data_path + 'sparse2/'
+			for i in range(num_files):
+				filename = 'sparsed' + str(i+41) +'.npy'
+				temp = np.load(path+filename)
+				data.extend(temp)
+		data = [[vector.toarray()[0] for vector in sentence] for sentence in data]
+		return data
+
+	def load_embedded_data(self):
+		self.num_of_data_files = 10
+		self.data_path = "../../atec_data/"
+		self.num_of_sentences = self.num_of_data_files*1000 #from how ivan's data is structured
+		# self.sentences1 = self.read_sentence(num_files = self.num_of_data_files,sentence_i=1,data_path = self.data_path)
+		# self.sentences2 = self.read_sentence(num_files = self.num_of_data_files,sentence_i=2,data_path = self.data_path)
+		
+		
+		
+		self.sentences1 = self.read_sentence_sparse(num_files = self.num_of_data_files, sentence_i=1,data_path = self.data_path)
+		self.sentences2 = self.read_sentence_sparse(num_files = self.num_of_data_files, sentence_i=2,data_path = self.data_path)
+		
+		# shape: (1000*num_files) X num_of_vectors (each vector is of size 4096)
+		# print("Number of sentences used for training: ", self.num_of_sentences)
+		
 		#each element in the input sequence should be like the following format
 		#x_1 = (sentences1[0],sentences2[0])
 
 		self.data = [(self.sentences1[i], self.sentences2[i]) for i in range(self.num_of_sentences)]
+		
 
+		# print("--------- loading label ------------")
 		self.labels = list(pd.read_csv('../data/processed_data.csv')['label'])[:self.num_of_sentences]
+		# print("Number of labels loaded: ", len(self.labels))
+		
+
 
 		# for test 
 		# self.data = [(np.random.rand(4, 5), np.random.rand(5, 5)),
