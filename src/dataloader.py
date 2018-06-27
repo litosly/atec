@@ -10,6 +10,7 @@ import re
 import csv
 import argparse 
 import numpy as np 
+import pandas as pd
 
 import torch 
 from torch.utils.data import Dataset, DataLoader
@@ -31,15 +32,45 @@ class AtecDataset(Dataset):
 	def __getitem__(self, index):
 		return self.data[index], self.labels[index]
 
+	def read_sentence(self, num_files = 1,sentence_i=1, data_path = "../data/"):
+		data = []
+		if sentence_i == 1:
+			path = data_path + 'Embedded Data/'
+			for i in range(num_files):
+				filename = 'embedded' + str(i+1) +'.npy'
+				temp = np.load(path+filename)
+				data.extend(temp)
+		else:
+			path = data_path + 'Embedded Data 2/'
+			for i in range(num_files):
+				filename = 'embedded' + str(i+41) +'.npy'
+				temp = np.load(path+filename)
+				data.extend(temp)
+		return data
+
 	def load_embedded_data(self):
+		self.num_of_data_files = 2
+		self.data_path = "../data/"
+		self.num_of_sentences = self.num_of_data_files*1000 #from how ivan's data is structured
+		self.sentences1 = self.read_sentence(num_files = self.num_of_data_files,sentence_i=1)
+		self.sentences2 = self.read_sentence(num_files = self.num_of_data_files,sentence_i=2)
+		# shape: (1000*num_files) X num_of_vectors (each vector is of size 4096)
+
+		#each element in the input sequence should be like the following format
+		#x_1 = (sentences1[0],sentences2[0])
+
+		self.data = [(self.sentences1[i], self.sentences2[i]) for i in range(self.num_of_sentences)]
+
+		self.labels = list(pd.read_csv('../data/processed_data.csv')['label'])[:self.num_of_sentences]
+
 		# for test 
-		self.data = [(np.random.rand(4, 5), np.random.rand(5, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					 (np.random.rand(6, 5), np.random.rand(7, 5)),
-					]
-		self.labels =  [0, 1, 1]
+		# self.data = [(np.random.rand(4, 5), np.random.rand(5, 5)),
+		# 			 (np.random.rand(6, 5), np.random.rand(7, 5)),
+		# 			 (np.random.rand(6, 5), np.random.rand(7, 5)),
+		# 			]
+		# self.labels =  [0, 1, 1]
 		
-		# 
+		
 		# self.data = None  # list of tuples 
 		# self.labels = None # list of ints 
 
