@@ -77,8 +77,9 @@ class Solver(object):
 
             print( 'Epoch [%d/%d], valid acc: %.4f, test acc: %.4f' 
                       % (epoch+1, self.config.num_epoch, valid_acc.data[0], test_acc.data[0]))
-            
+
         self.close_log(self.writer)
+        return self.evaluate(self.valid_dataloader).item()
 
     def train_step(self, epoch):
         total_steps = len(self.train_dataloader.dataset) // self.config.batch_size + 1
