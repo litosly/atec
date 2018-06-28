@@ -11,6 +11,7 @@ import csv
 import argparse 
 import numpy as np 
 import pandas as pd
+import pickle 
 
 import torch 
 from torch.utils.data import Dataset, DataLoader
@@ -105,6 +106,42 @@ class AtecDataset(Dataset):
 		
 		# self.data = None  # list of tuples 
 		# self.labels = None # list of ints 
+
+
+class AtecDatasetDopeIO(Dataset):
+	def __init__(self, config, mode="train"):
+		super(AtecDatasetDopeIO, self).__init__()
+		self.config = config 
+		self.mode = mode 
+		self.load_data_indices()
+
+	def __len__(self):
+		return len(self.labels)
+
+	def __getitem__(self, index):
+		file_name = self.data_paths[index]
+		path = os.path.join(self.config.embedding_dir, file_name)
+		with open(path, "rb") as f:
+			embedding = pickle.load(f)
+		# further preprocessing on embedding if using sparse or etc.
+		return embedding, self.labels[index]
+
+	def load_data_indices():
+		if os.path.exists(self.config.embedding_dir):
+			os.makedirs((self.config.embedding_dir))
+			self.write_embeddings_to_file()
+		self.data_paths = []	# get list of embedding file names 
+		self.labels = []	# get list of labels 
+
+	def write_embedding_to_file():
+		with open(self.config.embedding_dir) as infile:
+    		for i, line in enumerate(infile):
+    			embedding = None 
+        		file_name = str(i) + ".pkl"
+        		with open(file_name, "wb") as f:
+        			pickle.dump(embedding, f)
+        print("All embedding written to files")
+
 
 
 def my_collate(batch):
