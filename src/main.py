@@ -63,7 +63,7 @@ if __name__ == '__main__':
     parser.add_argument('--hidden_size', type=int, default=20, help='interval between training model saves')
     parser.add_argument('--output_size', type=int, default=4096, help='interval between training model saves')
 
-    parser.add_argument('--batch_size', type=int, default=128, help='number of workers for parallelizationp')
+    parser.add_argument('--batch_size', type=int, default=32, help='number of workers for parallelizationp')
     parser.add_argument('--lr', type=float, default=0.01, help='training learning rate')
     parser.add_argument('--num_epoch', type=int, default=10, help='number of trianing epochs')
     parser.add_argument('--log_step', type=int, default=10, help='interval between training status logs')

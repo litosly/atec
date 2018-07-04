@@ -69,8 +69,8 @@ class AtecDataset(Dataset):
 		return data
 
 	def load_embedded_data(self):
-		self.num_of_data_files = 10
-		self.data_path = "../../atec_data/"
+		self.num_of_data_files = 3
+		self.data_path = "E:\ATEC_data/"
 		self.num_of_sentences = self.num_of_data_files*1000 #from how ivan's data is structured
 		# self.sentences1 = self.read_sentence(num_files = self.num_of_data_files,sentence_i=1,data_path = self.data_path)
 		# self.sentences2 = self.read_sentence(num_files = self.num_of_data_files,sentence_i=2,data_path = self.data_path)
