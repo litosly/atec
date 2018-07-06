@@ -22,6 +22,7 @@ from torch.nn.utils.rnn import pad_sequence, pack_padded_sequence
 
 class AtecDataset(Dataset):
 	def __init__(self, config, mode="train"):
+		self.data_path = "E:\ATEC_data/"
 		super(AtecDataset, self).__init__()
 		self.config = config 
 		self.mode = mode 
@@ -31,7 +32,17 @@ class AtecDataset(Dataset):
 		return len(self.labels)
 
 	def __getitem__(self, index):
-		return self.data[index], self.labels[index]
+		true_index = (index//1000,index%1000)
+		sentence1 = self.read_specific_file_and_sentence(sentence_i = 1, file_idx = true_index[0], sentence_idx = true_index[1],data_path = self.data_path)
+		sentence2 = self.read_specific_file_and_sentence(sentence_i = 2, file_idx = true_index[0], sentence_idx = true_index[1],data_path = self.data_path)
+		data = (sentence1,sentence2)
+
+		# print('------------alright-----------------')
+		# print(data[0])
+		return data, self.labels[index]
+		# print('------------alright-----------------')
+		# print(self.data[index][0])
+		# return self.data[index], self.labels[index]
 
 	def read_sentence(self, num_files = 1,sentence_i=1, data_path = "../data/"):
 		data = []
@@ -48,9 +59,6 @@ class AtecDataset(Dataset):
 				temp = np.load(path+filename)
 				data.extend(temp)
 		return data
-
-	def sparse2array(self, sparse_sentence):
-		return [i.toarray() for i in sparse_sentence]
 
 	def read_sentence_sparse(self, num_files = 1,sentence_i=1, data_path = "../data/"):
 		data = []
@@ -69,17 +77,27 @@ class AtecDataset(Dataset):
 		data = [[vector.toarray()[0] for vector in sentence] for sentence in data]
 		return data
 
+	def read_specific_file_and_sentence(self, sentence_i = 1, file_idx = 1, sentence_idx = 1, data_path = "../data/"):
+		if sentence_i == 1:
+			path = data_path + 'sparse1/'
+			filename = 'sparsed' + str(file_idx+1) +'.npy'
+			return [vector.toarray()[0] for vector in np.load(path+filename)[sentence_idx]] 
+		else:
+			path = data_path + 'sparse2/'
+			filename = 'sparsed' + str(file_idx+41) +'.npy'
+			return [vector.toarray()[0] for vector in np.load(path+filename)[sentence_idx]] 
+
+
+
 	def load_embedded_data(self):
-		self.num_of_data_files = 3
-		self.data_path = "E:\ATEC_data/"
+		self.num_of_data_files = 1
+		
 		self.num_of_sentences = self.num_of_data_files*1000 #from how ivan's data is structured
 		# self.sentences1 = self.read_sentence(num_files = self.num_of_data_files,sentence_i=1,data_path = self.data_path)
 		# self.sentences2 = self.read_sentence(num_files = self.num_of_data_files,sentence_i=2,data_path = self.data_path)
-		
-		
-		
-		self.sentences1 = self.read_sentence_sparse(num_files = self.num_of_data_files, sentence_i=1,data_path = self.data_path)
-		self.sentences2 = self.read_sentence_sparse(num_files = self.num_of_data_files, sentence_i=2,data_path = self.data_path)
+
+		# self.sentences1 = self.read_sentence_sparse(num_files = self.num_of_data_files, sentence_i=1,data_path = self.data_path)
+		# self.sentences2 = self.read_sentence_sparse(num_files = self.num_of_data_files, sentence_i=2,data_path = self.data_path)
 		
 		# shape: (1000*num_files) X num_of_vectors (each vector is of size 4096)
 		# print("Number of sentences used for training: ", self.num_of_sentences)
@@ -87,7 +105,7 @@ class AtecDataset(Dataset):
 		#each element in the input sequence should be like the following format
 		#x_1 = (sentences1[0],sentences2[0])
 
-		self.data = [(self.sentences1[i], self.sentences2[i]) for i in range(self.num_of_sentences)]
+		# self.data = [(self.sentences1[i], self.sentences2[i]) for i in range(self.num_of_sentences)]
 		
 
 		# print("--------- loading label ------------")
@@ -135,12 +153,12 @@ class AtecDatasetDopeIO(Dataset):
 
 	def write_embedding_to_file():
 		with open(self.config.embedding_dir) as infile:
-    		for i, line in enumerate(infile):
-    			embedding = None 
-        		file_name = str(i) + ".pkl"
-        		with open(file_name, "wb") as f:
-        			pickle.dump(embedding, f)
-        print("All embedding written to files")
+			for i, line in enumerate(infile):
+				embedding = None 
+				file_name = str(i) + ".pkl"
+				with open(file_name, "wb") as f:
+					pickle.dump(embedding, f)
+			print("All embedding written to files")
 
 
 
