@@ -212,6 +212,19 @@ def get_batch(line_reader, batch_size):
         print("processing file")
     return buffer 
 
+'''每次拿bathch_size个batch， 我们把他的第i个和另一个的第i个合在一起'''
+
+if __name__ == '__main__':
+	path = "C:\Users\Rambus\Desktop\Litos\atec_data\"
+	reader1 = initialize_line_reader(path+"sparse1\sparsed1.npy")
+	reader2 = initialize_line_reader(path+"sparse2\sparsed41.npy")
+	data_batch1 = get_batch(reader1, self.batch_size)
+	data_batch2 = get_batch(reader2, self.batch_size)
+	data = [(data_batch1[i], data_batch2[i]) for i in len(data_batch1)]
+	print(data)
+	# while len(data_batch) != 0:
+	# 	print(data_batch)
+	# 	data_batch = get_batch(reader,2)
 
 """
 notes, each time initialize a reader, get batch sequentially 
