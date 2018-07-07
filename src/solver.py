@@ -20,7 +20,6 @@ from model import Encoder, Comparator, AtecModel
 from dataloader import get_dataloader#, get_test_dataloader
 from torch.nn.utils.rnn import pad_packed_sequence
 
-
 class Solver(object):
     """
     """
@@ -36,6 +35,7 @@ class Solver(object):
             self.load_data()
 
     def load_data(self, modes=["train", "valid", "test"]):
+        
         self.train_dataloader = get_dataloader(self.config, mode="train") if "train" in modes else None
         self.valid_dataloader = get_dataloader(self.config, mode="valid") if "valid" in modes else None
         self.test_dataloader = get_dataloader(self.config, mode="test") if "test" in modes else None
@@ -133,10 +133,3 @@ class Solver(object):
         # export scalar data to JSON for external processing
         writer.export_scalars_to_json(log_path)
         writer.close()
-
-
-
-
-
-
-

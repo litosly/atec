@@ -96,8 +96,8 @@ class AtecDataset(Dataset):
         # self.sentences1 = self.read_sentence(num_files = self.num_of_data_files,sentence_i=1,data_path = self.data_path)
         # self.sentences2 = self.read_sentence(num_files = self.num_of_data_files,sentence_i=2,data_path = self.data_path)
 
-        # self.sentences1 = self.read_sentence_sparse(num_files = self.num_of_data_files, sentence_i=1,data_path = self.data_path)
-        # self.sentences2 = self.read_sentence_sparse(num_files = self.num_of_data_files, sentence_i=2,data_path = self.data_path)
+        self.sentences1 = self.read_sentence_sparse(num_files = self.num_of_data_files, sentence_i=1,data_path = self.data_path)
+        self.sentences2 = self.read_sentence_sparse(num_files = self.num_of_data_files, sentence_i=2,data_path = self.data_path)
         
         # shape: (1000*num_files) X num_of_vectors (each vector is of size 4096)
         # print("Number of sentences used for training: ", self.num_of_sentences)
@@ -105,7 +105,7 @@ class AtecDataset(Dataset):
         #each element in the input sequence should be like the following format
         #x_1 = (sentences1[0],sentences2[0])
 
-        # self.data = [(self.sentences1[i], self.sentences2[i]) for i in range(self.num_of_sentences)]
+        self.data = [(self.sentences1[i], self.sentences2[i]) for i in range(self.num_of_sentences)]
         
 
         # print("--------- loading label ------------")
@@ -198,7 +198,8 @@ def get_dataloader(config, mode="train", full=False):
 def initialize_line_reader(path):
     with open(path, 'r') as f:
         for line in f:
-            yield line 
+        	print(line)
+        	yield line 
     
 def get_batch(line_reader, batch_size):
     buffer = []
@@ -212,18 +213,21 @@ def get_batch(line_reader, batch_size):
         print("processing file")
     return buffer 
 
-'''每次拿bathch_size个batch， 我们把他的第i个和另一个的第i个合在一起'''
+# '''每次拿bathch_size个batch， 我们把他的第i个和另一个的第i个合在一起'''
 
-if __name__ == '__main__':
-	path = "C:\Users\Rambus\Desktop\Litos\atec_data\"
-	reader1 = initialize_line_reader(path+"sparse1\sparsed1.npy")
-	reader2 = initialize_line_reader(path+"sparse2\sparsed41.npy")
-	data_batch1 = get_batch(reader1, self.batch_size)
-	data_batch2 = get_batch(reader2, self.batch_size)
-	data = [(data_batch1[i], data_batch2[i]) for i in len(data_batch1)]
-	print(data)
-	# while len(data_batch) != 0:
-	# 	print(data_batch)
+# if __name__ == '__main__':
+# 	path = "E:\ATEC_data/"
+# 	batch_size = 4
+	
+# 	reader1 = initialize_line_reader(path+"sparse1\sparsed1.npy")
+# 	reader2 = initialize_line_reader(path+"sparse2\sparsed41.npy")
+# 	# print(reader1)
+# 	data_batch1 = get_batch(reader1, batch_size)
+# 	data_batch2 = get_batch(reader2, batch_size)
+# 	data = [(data_batch1[i], data_batch2[i]) for i in len(data_batch1)]
+# 	print(data)
+# 	# while len(data_batch) != 0:
+# 	# 	print(data_batch)
 	# 	data_batch = get_batch(reader,2)
 
 """
